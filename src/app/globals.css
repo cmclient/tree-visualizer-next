@@ -1,0 +1,77 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.25);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 128, 128, 0.4);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-glow {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Tree connector lines */
+.tree-line {
+  position: relative;
+}
+.tree-line::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: hsl(var(--heroui-default-300));
+}
+
+/* File row hover */
+.tree-row {
+  transition: background 0.15s ease;
+  border-radius: 6px;
+}
+.tree-row:hover {
+  background: hsl(var(--heroui-default-100) / 0.6);
+}
+
+/* Pulse animation for drop zone */
+@keyframes pulse-border {
+  0%, 100% { border-color: hsl(var(--heroui-primary) / 0.3); }
+  50% { border-color: hsl(var(--heroui-primary) / 0.7); }
+}
+.drop-zone-pulse {
+  animation: pulse-border 2s ease-in-out infinite;
+}
+
+/* Smooth expand/collapse */
+.tree-node-enter {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+.tree-node-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
