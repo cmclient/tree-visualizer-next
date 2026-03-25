@@ -80,6 +80,13 @@ function TreeNodeRow({ node, expandedPaths, toggleExpand, searchQuery }: TreeNod
           {highlightMatch(node.name, searchQuery)}
         </span>
 
+        {/* Size from tree -h / tree -h --du */}
+        {node.size && (
+          <span className="flex-shrink-0 text-[11px] font-mono text-default-400 bg-default-100 dark:bg-default-50 rounded px-1 ml-1.5">
+            {node.size}
+          </span>
+        )}
+
         {/* Badge for directories */}
         {node.isDirectory && descendants && (
           <span className="ml-auto flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">

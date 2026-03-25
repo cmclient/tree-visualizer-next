@@ -4,6 +4,7 @@ export interface TreeNode {
   children: TreeNode[];
   depth: number;
   path: string;
+  size?: string;
 }
 
 export interface TreeStats {
@@ -40,6 +41,12 @@ export function parseSummary(input: string): { totalSize: string | null; volumes
     }
   }
 
+  // tree -h --du format: " 2.1T used in 136 directories, 168 files"
+  if (!totalSize) {
+    const duMatch = input.match(/\b([\d.]+\s*[KMGTPE]i?)\s+used\s+in\b/i);
+    if (duMatch) totalSize = duMatch[1].trim();
+  }
+
   return { totalSize, volumes };
 }
 
@@ -65,7 +72,27 @@ export function parseTreeOutput(input: string): TreeNode[] {
     if (!stripped) continue;
 
     const indent = cleaned.length - stripped.length;
-    const name = stripped.replace(/\u0000/g, " ").replace(/\/$/,"");
+
+    // Extract [size] prefix from `tree -h` / `tree -h --du` output
+    let workingStripped = stripped;
+    let size: string | undefined;
+    const sizeMatch = workingStripped.match(/^\[\s*([\d.]+\s*[KMGTPE]?)\s*\]\s*/);
+    if (sizeMatch) {
+      size = sizeMatch[1].trim();
+      workingStripped = workingStripped.slice(sizeMatch[0].length);
+    }
+
+    // Skip trailing summary lines, e.g.:
+    //   "136 directories, 168 files"
+    //   " 2.1T used in 136 directories, 168 files"
+    if (
+      /^\d+\s+director/i.test(workingStripped) ||
+      /^[\d.]+\s*[KMGTPE]?\s+used\s+in\s+\d+/i.test(workingStripped)
+    ) {
+      continue;
+    }
+
+    const name = workingStripped.replace(/\u0000/g, " ").replace(/\/$/,"");
 
     if (!name) continue;
 
@@ -78,6 +105,7 @@ export function parseTreeOutput(input: string): TreeNode[] {
       children: [],
       depth: 0,
       path: name,
+      size,
     };
 
     // Pop stack until we find a parent with smaller indent
